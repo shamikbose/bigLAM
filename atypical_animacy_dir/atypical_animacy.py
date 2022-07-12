@@ -108,7 +108,7 @@ class AtypicalAnimacy(datasets.GeneratorBasedBuilder):
             target = row.TargetExpression
             animacy = float(row.animacy)
             humanness = float(row.humanness)
-            target_start = sentence.find(target)
+            target_start = row.Sentence.find("***")
             offsets = [target_start, target_start + len(target)]
             id = row.SentenceId
             yield id, {
