@@ -81,11 +81,12 @@ class LancasterNewsbooks(datasets.GeneratorBasedBuilder):
                 name=datasets.Split.TRAIN,
                 gen_kwargs={
                     "data_dirs": subdirs,
+                    "split": "train"
                 },
             ),      
         ]
 
-    def _generate_examples(self, data_dirs):
+    def _generate_examples(self, data_dirs, split):
         for subdir in data_dirs:
             for file in glob.glob(os.path.join(subdir,"*.xml")):
                 text_parts=[]
