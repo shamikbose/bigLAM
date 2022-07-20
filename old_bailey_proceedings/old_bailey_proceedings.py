@@ -39,9 +39,7 @@ _DATASETNAME = "old_bailey_proceedings"
 
 _LICENSE = "Creative Commons Attribution 4.0 International"
 
-_URLS = {
-    _DATASETNAME: "https://www.dhi.ac.uk/san/data/oldbailey/oldbailey.zip",
-}
+_URL = "https://www.dhi.ac.uk/san/data/oldbailey/oldbailey.zip"
 
 logger = datasets.utils.logging.get_logger(__name__)
 
@@ -73,8 +71,7 @@ class OldBaileyProceedings(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        urls = _URLS[_DATASETNAME]
-        data_dir = dl_manager.download_and_extract(urls)
+        data_dir = dl_manager.download_and_extract(_URL)
         oa_dir = "ordinarysAccounts"
         obp_dir = "sessionsPapers"
         return [
@@ -125,14 +122,17 @@ class OldBaileyProceedings(datasets.GeneratorBasedBuilder):
                     if text_snippet:
                         text_parts.append(text_snippet)
             full_text = " ".join(text_parts)
-            return 0, {
-                "id": id,
-                "date": date,
-                "type": key,
-                "places": places,
-                "persons": persons,
-                "text": full_text,
-            }
+            return (
+                0,
+                {
+                    "id": id,
+                    "date": date,
+                    "type": key,
+                    "places": places,
+                    "persons": persons,
+                    "text": full_text,
+                },
+            )
         except Exception as e:
             return -1, repr(e)
 
@@ -141,8 +141,9 @@ class OldBaileyProceedings(datasets.GeneratorBasedBuilder):
             for file in glob.glob(os.path.join(data_dir, "*.xml")):
                 status_code, ret_val = self.convert_text_to_features(file, key)
                 if status_code:
-                    logger.warn(f"{file}:{ret_val}")
-                    input()
+                    logger.exception(
+                        f"{os.path.basename(file)} could not be parsed properly"
+                    )
                     continue
                 else:
                     yield ret_val["id"], ret_val
