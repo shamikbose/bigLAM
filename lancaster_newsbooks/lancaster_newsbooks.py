@@ -43,9 +43,14 @@ _HOMEPAGE = "https://ota.bodleian.ox.ac.uk/repository/xmlui/handle/20.500.12024/
 
 _LICENSE = "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License"
 
-_URL = "https://ota.bodleian.ox.ac.uk/repository/xmlui/handle/20.500.12024/2531/allzip"
+_FOLDERS = ["1654_newsbooks", "mercurius_fumigosus"]
+_URLS = [
+    "https://ota.bodleian.ox.ac.uk/repository/xmlui/bitstream/handle/20.500.12024/2531/1654_newsbooks.zip?sequence=3&isAllowed=y",
+    "https://ota.bodleian.ox.ac.uk/repository/xmlui/bitstream/handle/20.500.12024/2531/mercurius_fumigosus.zip?sequence=6&isAllowed=y",
+]
 
 logger = datasets.utils.logging.get_logger(__name__)
+
 
 class LancasterNewsbooks(datasets.GeneratorBasedBuilder):
     """ This corpus consists of two collections of seventeenth-century English "newsbooks" stored as a set of 303 XML files
@@ -58,7 +63,7 @@ class LancasterNewsbooks(datasets.GeneratorBasedBuilder):
             {
                 "id": datasets.Value("string"),
                 "text": datasets.Value("string"),
-                "title": datasets.Value("string")
+                "title": datasets.Value("string"),
             }
         )
         return datasets.DatasetInfo(
@@ -70,33 +75,29 @@ class LancasterNewsbooks(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        data_dir = dl_manager.download_and_extract(_URL)
-        subdirs=[]
-        for zipfile in glob.glob(os.path.join(data_dir, "*.zip")):
-            subdir=dl_manager.extract(zipfile)
-            subdir=os.path.join(subdir, os.path.basename(zipfile)[:-4])
-            subdirs.append(subdir)
+        data_dirs = dl_manager.download_and_extract(_URLS)
+        data_dirs = [
+            os.path.join(data_dir, folder)
+            for data_dir, folder in zip(data_dirs, _FOLDERS)
+        ]
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
-                gen_kwargs={
-                    "data_dirs": subdirs,
-                    "split": "train"
-                },
-            ),      
+                gen_kwargs={"data_dirs": data_dirs, "split": "train"},
+            ),
         ]
 
     def _generate_examples(self, data_dirs, split):
         for subdir in data_dirs:
-            for file in glob.glob(os.path.join(subdir,"*.xml")):
-                text_parts=[]
-                with open(file, 'r') as fp:
-                    soup=BeautifulSoup(fp, features="xml")
-                    title=soup.find("title").text
+            for file in glob.glob(os.path.join(subdir, "*.xml")):
+                text_parts = []
+                with open(file, "r") as fp:
+                    soup = BeautifulSoup(fp, features="xml")
+                    title = soup.find("title").text
                     id = soup.newsbookDoc.attrs["id"]
                     for text_part in soup.find_all("p"):
                         text_parts.append(text_part.text)
-                    full_text=" ".join(text_parts)
+                    full_text = " ".join(text_parts)
                 data_point = {"id": id, "title": title, "text": full_text}
                 yield id, data_point
-        
+
