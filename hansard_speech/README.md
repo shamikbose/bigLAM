@@ -78,25 +78,28 @@ A dataset containing every speech in the House of Commons from May 1979-July 202
 
 ```
 {
-'id': 'uk.org.publicwhip/debate/1979-05-10a.23.4', 
-'speech': 'Malcolm Leslie Rifkind, esquire, Edinburgh, Pentlands.', 
-'display_as': 'Unknown', 
-'party': nan, 
-'constituency': nan, 
-'mnis_id': nan, 
-'date': '1979-05-10', 
-'time': nan, 
-'colnum': '23', 
-'speech_class': 'Procedural', 
-'major_heading': 'MEMBERS SWORN', 
-'minor_heading': nan, 
-'oral_heading': nan, 
-'year': 1979, 
-'hansard_membership_id': nan, 
-'speakerid': nan, 
-'person_id': nan, 
-'speakername': 'Unknown', 
-'url': nan
+  'id': 'uk.org.publicwhip/debate/1979-05-17a.390.0', 
+  'speech': "Since the Minister for Consumer Affairs said earlier that the bread price rise would be allowed, in view of developing unemployment in the baking industry, and since the Mother's Pride bakery in my constituency is about to close, will the right hon. Gentleman give us a firm assurance that there will be an early debate on the future of the industry, so that the Government may announce that, thanks to the price rise, those workers will not now be put out of work?", 
+  'display_as': 'Eric Heffer', 
+  'party': 'Labour', 
+  'constituency': 'Liverpool, Walton', 
+  'mnis_id': '725', 
+  'date': '1979-05-17', 
+  'time': '', 
+  'colnum': '390', 
+  'speech_class': 'Speech', 
+  'major_heading': 'BUSINESS OF THE HOUSE', 
+  'minor_heading': '', 
+  'oral_heading': '', 
+  'year': '1979', 
+  'hansard_membership_id': '5612', 
+  'speakerid': 'uk.org.publicwhip/member/11615', 
+  'person_id': '', 
+  'speakername': 'Mr. Heffer', 
+  'url': '', 
+  'government_posts': [], 
+  'opposition_posts': [], 
+  'parliamentary_posts': ['Member, Labour Party National Executive Committee']
 }
 ```
 
@@ -123,9 +126,9 @@ A dataset containing every speech in the House of Commons from May 1979-July 202
 |person_id	|ID used by mysociety|
 |speakername|	MP name as appeared in Hansard record for speech|
 |url| link to speech|
-|government_posts|	Government posts held by MP (list-column)|
-|opposition_posts	|Opposition posts held by MP (list-column)|
-|parliamentary_posts|	Parliamentary posts held by MP (list-column)|
+|government_posts|	Government posts held by MP (list)|
+|opposition_posts	|Opposition posts held by MP (list)|
+|parliamentary_posts|	Parliamentary posts held by MP (list)|
 
 ### Data Splits
 

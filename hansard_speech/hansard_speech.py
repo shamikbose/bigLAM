@@ -15,9 +15,10 @@
 A dataset containing every speech in the House of Commons from May 1979-July 2020.
 """
 
+import json
 import os
 import pandas as pd
-
+from datetime import datetime
 import datasets
 
 _CITATION = """@misc{odell, evan_2021, 
@@ -113,12 +114,6 @@ class HansardSpeech(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, dl_manager):
-        # TODO: This method is tasked with downloading/extracting the data and defining the splits depending on the configuration
-        # If several configurations are possible (listed in BUILDER_CONFIGS), the configuration selected by the user is in self.config.name
-
-        # dl_manager is a datasets.download.DownloadManager that can be used to download and extract URLS
-        # It can accept any type or nested list/dict and will give back the same structure with the url replaced with path to local files.
-        # By default the archives will be extracted and a path to a cached folder where they are extracted is returned instead of the archive
         temp_dir = dl_manager.download_and_extract(_URLS["csv"])
         csv_file = os.path.join(temp_dir, "hansard-speeches-v310.csv")
         json_file = dl_manager.download(_URLS["json"])
@@ -132,21 +127,36 @@ class HansardSpeech(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, filepaths, split):
         logger.warn("\nThis is a large dataset. Please be patient")
-        json_data = pd.read_json(filepaths[1])
+        json_data = pd.read_json(filepaths[1], dtype="object")
         csv_data_chunks = pd.read_csv(filepaths[0], chunksize=50000, dtype="object")
         for data_chunk in csv_data_chunks:
+            data_chunk.fillna("", inplace=True)
             for _, row in data_chunk.iterrows():
                 data_point = {}
                 for field in fields[:-3]:
-                    data_point[field] = row[field]
-                parl_post = json_data.loc[
-                    (json_data["mnis_id"] == data_point["mnis_id"])
-                    & (json_data["date"] == data_point["date"])
-                ]
+                    data_point[field] = row[field] if row[field] else ""
+                parl_post_list = []
+                if data_point["mnis_id"] and data_point["date"]:
+                    if data_point["time"]:
+                        speech_dt = (
+                            data_point["date"] + " " + data_point["time"] + ":00"
+                        )
+                    else:
+                        speech_dt = data_point["date"] + " 00:00:00"
+                    speech_dt_obj = datetime.strptime(speech_dt, "%Y-%m-%d %H:%M:%S")
+                    parl_posts = json_data[
+                        (json_data["mnis_id"] == data_point["mnis_id"])
+                        & (json_data["date"] == speech_dt_obj)
+                    ]["parliamentary_posts"]
+                    if len(parl_posts) > 0:
+                        parl_posts = parl_posts.iloc[0]
+                        for item in parl_posts:
+                            parl_post_list.append(item["parl_post_name"])
+
                 opp_post = []
                 gov_post = []
                 data_point["government_posts"] = gov_post
                 data_point["opposition_posts"] = opp_post
-                data_point["parliamentary_posts"] = parl_post
+                data_point["parliamentary_posts"] = parl_post_list
                 yield data_point["id"], data_point
             break
