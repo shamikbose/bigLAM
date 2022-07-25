@@ -17,6 +17,7 @@ A dataset containing every speech in the House of Commons from May 1979-July 202
 
 import json
 import os
+import time
 import pandas as pd
 from datetime import datetime
 import datasets
@@ -127,36 +128,34 @@ class HansardSpeech(datasets.GeneratorBasedBuilder):
 
     def _generate_examples(self, filepaths, split):
         logger.warn("\nThis is a large dataset. Please be patient")
-        json_data = pd.read_json(filepaths[1], dtype="object")
+        json_data = pd.read_json(filepaths[1])
         csv_data_chunks = pd.read_csv(filepaths[0], chunksize=50000, dtype="object")
         for data_chunk in csv_data_chunks:
             data_chunk.fillna("", inplace=True)
             for _, row in data_chunk.iterrows():
                 data_point = {}
                 for field in fields[:-3]:
-                    data_point[field] = row[field] if row[field] else ""
+                    data_point[field] = str(row[field]) if row[field] else ""
                 parl_post_list = []
                 if data_point["mnis_id"] and data_point["date"]:
-                    if data_point["time"]:
-                        speech_dt = (
-                            data_point["date"] + " " + data_point["time"] + ":00"
+                    speech_dt = data_point["date"] + " 00:00:00"
+                    try:
+                        parl_posts = json_data[
+                            (json_data["mnis_id"] == int(data_point["mnis_id"]))
+                            & (json_data["date"] == speech_dt)
+                        ]["parliamentary_posts"]
+                        if len(parl_posts) > 0:
+                            parl_posts = parl_posts.iloc[0]
+                            for item in parl_posts:
+                                parl_post_list.append(item["parl_post_name"])
+                    except Exception as e:
+                        logger.warn(
+                            f"Data could not be fetched for mnis_id: {data_point['mnis_id']}, date: {data_point['date']}\nError: {repr(e)}"
                         )
-                    else:
-                        speech_dt = data_point["date"] + " 00:00:00"
-                    speech_dt_obj = datetime.strptime(speech_dt, "%Y-%m-%d %H:%M:%S")
-                    parl_posts = json_data[
-                        (json_data["mnis_id"] == data_point["mnis_id"])
-                        & (json_data["date"] == speech_dt_obj)
-                    ]["parliamentary_posts"]
-                    if len(parl_posts) > 0:
-                        parl_posts = parl_posts.iloc[0]
-                        for item in parl_posts:
-                            parl_post_list.append(item["parl_post_name"])
-
                 opp_post = []
                 gov_post = []
                 data_point["government_posts"] = gov_post
                 data_point["opposition_posts"] = opp_post
                 data_point["parliamentary_posts"] = parl_post_list
                 yield data_point["id"], data_point
-            break
+
