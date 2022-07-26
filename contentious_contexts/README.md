@@ -63,8 +63,7 @@ task_ids:
 
 ### Dataset Summary
 
-This dataset contains extracts from historical Dutch newspapers which have been containing keywords of potentially contentious words (according to present-day sensibilities). 
-The dataset contains multiple annotations per instance, given the option to quantify agreement scores for annotations. This dataset can be used to track how words and their meanings have changed over time
+This dataset contains extracts from historical Dutch newspapers containing keywords of potentially contentious words (according to present-day sensibilities). The dataset contains multiple annotations per instance, given the option to quantify agreement scores for annotations. This dataset can be used to track how words and their meanings have changed over time
 
 ### Supported Tasks and Leaderboards
 
@@ -126,39 +125,38 @@ Train: 2720
 
 ### Curation Rationale
 
-> Cultural heritage institutions recognise the problem of language use in their collections. The cultural objects in archives, libraries, and museums contain words and phrases that are inappropriate in modern society but were used broadly back in times. Such words can be offensive and discriminative. In our work, we use the term contentious to refer to all (potentially) inappropriate or otherwise sensitive words. For example, words suggestive of some (implicit or explicit) bias towards or against something. The National Archives of the Netherlands stated that they "explore the possibility of explaining language that was acceptable and common in the past and providing it with contemporary alternatives", meanwhile "keeping the original descriptions [with contentious words], because they give an idea of the time in which they were made or included in the collection". There is a page on the institution website where people can report "offensive language".
+> Cultural heritage institutions recognise the problem of language use in their collections. The cultural objects in archives, libraries, and museums contain words and phrases that are inappropriate in modern society but were used broadly back in times. Such words can be offensive and discriminative. In our work, we use the term "contentious" to refer to all (potentially) inappropriate or otherwise sensitive words. For example, words suggestive of some (implicit or explicit) bias towards or against something. The National Archives of the Netherlands stated that they "explore the possibility of explaining language that was acceptable and common in the past and providing it with contemporary alternatives", meanwhile "keeping the original descriptions [with contentious words], because they give an idea of the time in which they were made or included in the collection". There is a page on the institution website where people can report "offensive language".
 
 ### Source Data
 
 #### Initial Data Collection and Normalization
 
-> The queries were run on OCRd versions of the Europeana Newspaper collection, as provided by the KB National Library of the Netherlands. We limited our pool to text categorised as article, thus excluding other types of texts such as advertisements and family notices. We then only focused our sample on the 6 decades between 1890-01-01 and 1941-12-31, as this is the period available in the Europeana newspaper corpus. The dataset represents a stratified sample set over target word, decade, and newspaper issue distribution metadata. For the final set of extracts for annotation, we gave extracts sampling weights proportional to their actual probabilities, as estimated from the initial set of extracts via trigram frequencies, rather than sampling uniformly.
+> The queries were run on OCR'd versions of the Europeana Newspaper collection, as provided by the KB National Library of the Netherlands. We limited our pool to text categorised as "article", thus excluding other types of texts such as advertisements and family notices. We then only focused our sample on the 6 decades between 1890-01-01 and 1941-12-31, as this is the period available in the Europeana newspaper corpus. The dataset represents a stratified sample set over target word, decade, and newspaper issue distribution metadata. For the final set of extracts for annotation, we gave extracts sampling weights proportional to their actual probabilities, as estimated from the initial set of extracts via trigram frequencies, rather than sampling uniformly.
 
 #### Who are the source language producers?
 
-[Needs More Information]
+[N/A]
 
 ### Annotations
 
 #### Annotation process
 
-> The annotation process included 3 stages: pilot annotation, expert annotation, and crowdsourced annotation on the "Prolific" platform. All stages required the participation of Dutch speakers. The pilot stage was intended for testing the annotation layout, the instructions clarity, the number of sentences provided as context, the survey questions, and the difficulty of the task in general. The Dutch-speaking members of the Cultural AI Lab were asked to test the annotation process and give their feedback anonymously using Google Sheets. Six
-volunteers contributed to the pilot stage, each annotating the same 40 samples where either a context of 3 or 5 sentences surrounding the term were given. An individual annotation sheet had a table layout with 4 options to choose for every sample
-- 'Omstreden' (Contentious), 
-- 'Niet omstreden' (Not contentious)
-- 'Weet ik niet', (I dont know)
-- 'Onleesbare OCR', (Illegible OCR))
+> The annotation process included 3 stages: pilot annotation, expert annotation, and crowdsourced annotation on the "Prolific" platform. All stages required the participation of Dutch speakers. The pilot stage was intended for testing the annotation layout, the instructions clarity, the number of sentences provided as context, the survey questions, and the difficulty of the task in general. The Dutch-speaking members of the Cultural AI Lab were asked to test the annotation process and give their feedback anonymously using Google Sheets. Six volunteers contributed to the pilot stage, each annotating the same 40 samples where either a context of 3 or 5 sentences surrounding the term were given. An individual annotation sheet had a table layout with 4 options to choose for every sample
+> - 'Omstreden'(Contentious)
+> - 'Niet omstreden'(Not contentious)
+> - 'Weet ik niet'(I don't know)
+> - 'Onleesbare OCR'(Illegible OCR)</br>
 2 open fields 
-- 'Andere omstreden termen in de context' (Other contentious terms in the context)
-- 'Notities' (Notes)
-and the instructions in the header. The rows were the samples with the highlighted words, the tickboxes for every option, and 2 empty cells for the open questions. The obligatory part of the annotation was to select one ofthe 4 options for every sample. Finding other contentious terms in the given sample, leaving notes, and answering 4 additional open questions at the end of the task were optional. Based on the received feedback and the answers to the open questions in the pilot study, the following decisions were made regarding the next, experts' annotation stage:
-- The annotation layout was built in Google Forms as a questionnaire instead of the table layout in Google Sheets to make the data collection and analysis faster as the number of participants would increase;
-- The context window of 5 sentences per sample was found optimal;
-- The number of samples per annotator was increased to 50;
-- The option 'Omstreden' (Contentious) was changed to 'Omstreden naar huidige maatstaven' ('Contentious according to current standards') to clarify that annotators should judge contentiousness of the words use in context from today's perspective;
-- The annotation instruction was edited to clarify 2 points: (1) that annotators while judging contentiousness should take into account not only a bolded word but also the context surrounding it, and (2) if a word seems even slightly contentious to an annotator, they should choose the option 'Omstreden naar huidige maatstaven' (Contentious according to current standards);
-- The non-required field for every sample 'Notities' (Notes) was removed as there was an open question at the end of the annotation, where participants could leave their comments;
-- Another open question was added at the end of the annotation asking how much time it took to complete the annotation.
+> - 'Andere omstreden termen in de context'(Other contentious terms in the context)
+> - 'Notities'(Notes)</br>
+and the instructions in the header. The rows were the samples with the highlighted words, the tickboxes for every option, and 2 empty cells for the open questions. The obligatory part of the annotation was to select one of the 4 options for every sample. Finding other contentious terms in the given sample, leaving notes, and answering 4 additional open questions at the end of the task were optional. Based on the received feedback and the answers to the open questions in the pilot study, the following decisions were made regarding the next, experts' annotation stage:
+> - The annotation layout was built in Google Forms as a questionnaire instead of the table layout in Google Sheets to make the data collection and analysis faster as the number of participants would increase;
+> - The context window of 5 sentences per sample was found optimal;
+> - The number of samples per annotator was increased to 50;
+> - The option 'Omstreden' (Contentious) was changed to 'Omstreden naar huidige maatstaven' ('Contentious according to current standards') to clarify that annotators should judge contentiousness of the word's use in context from today's perspective;
+> - The annotation instruction was edited to clarify 2 points: (1) that annotators while judging contentiousness should take into account not only a bolded word but also the context surrounding it, and (2) if a word seems even slightly contentious to an annotator, they should choose the option 'Omstreden naar huidige maatstaven' (Contentious according to current standards);
+> - The non-required field for every sample 'Notities' (Notes) was removed as there was an open question at the end of the annotation, where participants could leave their comments;
+> - Another open question was added at the end of the annotation asking how much time it took to complete the annotation.
 
 #### Who are the annotators?
 
