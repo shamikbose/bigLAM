@@ -91,7 +91,7 @@ class LancasterNewsbooks(datasets.GeneratorBasedBuilder):
         for subdir in data_dirs:
             for file in glob.glob(os.path.join(subdir, "*.xml")):
                 text_parts = []
-                with open(file, "r") as fp:
+                with open(file, "r", encoding="latin-1") as fp:
                     soup = BeautifulSoup(fp, features="xml")
                     title = soup.find("title").text
                     id = soup.newsbookDoc.attrs["id"]
