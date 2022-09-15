@@ -19,6 +19,7 @@ areas of everyday life and, last but not least, the standardisation of British E
 
 from bs4 import BeautifulSoup
 import datasets
+from datetime import datetime
 
 _CITATION = """ @misc{20.500.12024/3193,
  title = {The Lampeter Corpus of Early Modern English Tracts},
@@ -39,7 +40,15 @@ _LICENSE = "Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)"
 
 _URL = "https://ota.bodleian.ox.ac.uk/repository/xmlui/bitstream/handle/20.500.12024/3193/3193.xml?sequence=9&isAllowed=y"
 
-_CLASS_MAP = {"L": "Law", "E": "Economy", "M": "Miscellaneous", "P": "Politics", "S": "Science", "R": "Religion"}
+_CLASS_MAP = {
+    "L": "Law",
+    "E": "Economy",
+    "M": "Miscellaneous",
+    "P": "Politics",
+    "S": "Science",
+    "R": "Religion",
+}
+
 
 class LampeterCorpus(datasets.GeneratorBasedBuilder):
     """ The Lampeter Corpus of Early Modern English Tracts is a collection of texts on
@@ -54,10 +63,10 @@ class LampeterCorpus(datasets.GeneratorBasedBuilder):
             {
                 "id": datasets.Value("string"),
                 "text": datasets.Value("string"),
-                "date": datasets.Value("string"),
+                "date": datasets.Value("date64"),
                 "genre": datasets.Value("string"),
                 "head": datasets.Value("string"),
-                "title": datasets.Value("string")
+                "title": datasets.Value("string"),
             }
         )
         return datasets.DatasetInfo(
@@ -73,40 +82,38 @@ class LampeterCorpus(datasets.GeneratorBasedBuilder):
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
-                gen_kwargs={
-                    "filepath": data_file,
-                    "split": "train",
-                },
-            ),      
+                gen_kwargs={"filepath": data_file, "split": "train",},
+            ),
         ]
 
     def _generate_examples(self, filepath, split):
+        dt_format = "%Y"
         with open(filepath, encoding="utf-8") as f:
-            soup=BeautifulSoup(f, features='xml')
+            soup = BeautifulSoup(f, features="xml")
             for entry in soup.find_all("TEI"):
                 text_parts = []
                 title_with_id = entry.teiHeader.fileDesc.titleStmt.title.text
                 id, title = title_with_id.split(":", maxsplit=1)
                 id = id.strip()
-                title=title.strip()
-                date=id[-4:]
+                title = title.strip()
+                date = datetime.strptime(id[-4:], dt_format)
                 content = entry.find("text")
-                head=content.find("body").find("head")
+                head = content.find("body").find("head")
                 if head:
-                    head=head.text
+                    head = head.text
                 else:
-                    head=""
-                body_parts=content.find("body").find_all("p")
+                    head = ""
+                body_parts = content.find("body").find_all("p")
                 for body_part in body_parts:
                     text_parts.append(body_part.text)
                 full_text = " ".join(text_parts)
-                genre=_CLASS_MAP[id[0]]
+                genre = _CLASS_MAP[id[0]]
                 data_point = {
-                    "id": id, 
-                    "text": full_text, 
-                    "genre": genre, 
-                    "date": date, 
-                    "head": head, 
-                    "title": title
-                    }
+                    "id": id,
+                    "text": full_text,
+                    "genre": genre,
+                    "date": date,
+                    "head": head,
+                    "title": title,
+                }
                 yield id, data_point
